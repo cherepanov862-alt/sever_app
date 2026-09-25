@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Severmax Control</title>
+    <!-- Google Fonts & Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <style>
+        :root {
+            --bg-color: #121212;
+            --surface-color: #1e1e1e;
+            --surface-container: #2c2c2c;
+            --primary-color: #ff5722;
+            --primary-gradient: linear-gradient(135deg, #ff5722, #f44336);
+            --stop-gradient: linear-gradient(135deg, #d32f2f, #b71c1c);
+            --text-primary: #e0e0e0;
+            --text-secondary: #aaaaaa;
+            --error-color: #cf6679;
+            --radius: 20px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+            padding-bottom: 50px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 4px;
+            color: #ff8a65;
+        }
+
+        /* Навигация по вкладкам */
+        .nav-tabs {
+            display: flex;
+            background-color: var(--surface-color);
+            border-radius: 16px;
+            padding: 4px;
+            gap: 4px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            padding: 10px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            transition: 0.2s;
+        }
+
+        .tab-btn.active {
+            background-color: var(--surface-container);
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .tab-content {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .tab-content.active {
+            display: flex;
+        }
+
+        /* Карточки */
+        .card {
+            background-color: var(--surface-color);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Баннер авто */
+        .car-banner {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            border-radius: var(--radius);
+            overflow: hidden;
+            background-color: var(--surface-container);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #444;
+        }
+
+        .car-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .car-banner-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .car-info-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding: 12px 16px;
+        }
+
+        .car-title-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+        }
+
+        /* Статус */
+        .status-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-text {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        /* Кнопки */
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        button {
+            border: none;
+            border-radius: 16px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.1s ease, opacity 0.2s;
+        }
+
+        button:active {
+            transform: scale(0.96);
+        }
+
+        .btn-start {
+            background: var(--primary-gradient);
+            grid-column: span 2;
+            font-size: 20px;
+            padding: 20px;
+        }
+
+        .btn-stop {
+            background: var(--stop-gradient);
+            grid-column: span 2;
+        }
+
+        .btn-action {
+            background-color: var(--surface-container);
+            color: var(--text-primary);
+        }
+
+        /* Поля ввода и слайдеры */
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .slider-value {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            background: var(--surface-container);
+            border-radius: 4px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255, 87, 34, 0.5);
+        }
+
+        input {
+            background-color: var(--surface-container);
+            border: 1px solid #444;
+            border-radius: 12px;
+            padding: 12px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--primary-color);
+        }
+
+        /* Логи и ошибки */
+        .error-item, .log-item {
+            background-color: var(--surface-container);
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .error-item {
+            border-left: 4px solid var(--error-color);
+        }
+
+        .error-code {
+            font-weight: 700;
+            color: var(--error-color);
+            font-size: 15px;
+        }
+
+        .error-desc {
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .error-rec {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .log-item {
+            border-left: 4px solid var(--primary-color);
+            font-size: 13px;
+        }
+
+        .log-time {
+            color: var(--text-secondary);
+            font-size: 11px;
+        }
+
+        .donate-box {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .phone-display {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary-color);
+            background: var(--surface-container);
+            padding: 12px 24px;
+            border-radius: 14px;
+            letter-spacing: 1px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Severmax Control</h1>
+
+    <!-- Меню навигации -->
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('tab-control', this)">
+            <span class="material-symbols-outlined" style="font-size: 16px;">tune</span> Пульт
+        </button>
+        <button class="tab-btn" onclick="switchTab('tab-log', this)">
+            <span class="material-symbols-outlined" style="font-size: 16px;">history</span> Лог
+        </button>
+        <button class="tab-btn" onclick="switchTab('tab-errors', this)">
+            <span class="material-symbols-outlined" style="font-size: 16px;">warning</span> Ошибки
+        </button>
+        <button class="tab-btn" onclick="switchTab('tab-donate', this)">
+            <span class="material-symbols-outlined" style="font-size: 16px;">favorite</span> Донат
+        </button>
+    </div>
+
+    <!-- ВКЛАДКА 1: ПУЛЬТ УПРАВЛЕНИЯ -->
+    <div id="tab-control" class="tab-content active">
+        
+        <!-- Баннер с фото авто -->
+        <div class="car-banner" id="carBannerContainer">
+            <div class="car-banner-placeholder" id="carPlaceholder">
+                <span class="material-symbols-outlined" style="font-size: 40px;">directions_car</span>
+                <span>Добавьте фото вашего авто</span>
+            </div>
+            <img id="carImagePreview" src="" alt="Мое авто" style="display: none;">
+            <div class="car-info-overlay">
+                <span class="car-title-text" id="displayCarName">Мой автомобиль</span>
+            </div>
+        </div>
+
+        <!-- Конфигурация авто -->
+        <div class="card" style="padding: 16px;">
+            <div class="card-title">
+                <span class="material-symbols-outlined">settings_suggest</span> Настройка авто
+            </div>
+            <div class="input-group">
+                <label for="carModelInput">Модель автомобиля:</label>
+                <input type="text" id="carModelInput" placeholder="Например: Toyota RAV4" oninput="saveCarConfig()">
+            </div>
+            <div class="input-group">
+                <label for="carPhotoInput">Фотография машины:</label>
+                <input type="file" id="carPhotoInput" accept="image/*" onchange="loadCarPhoto(event)">
+            </div>
+        </div>
+
+        <!-- Номер отопителя -->
+        <div class="card" style="padding: 14px 20px;">
+            <div class="input-group">
+                <label for="heaterPhone">Номер телефона отопителя:</label>
+                <input type="tel" id="heaterPhone" placeholder="+7XXXXXXXXXX" value="">
+            </div>
+        </div>
+
+        <!-- Статус -->
+        <div class="card">
+            <div class="card-title">
+                <span class="material-symbols-outlined">info</span> Состояние устройства
+            </div>
+            <div class="status-box">
+                <span class="status-text" id="statusDisplay">Нет данных</span>
+                <button class="btn-action" style="padding: 10px 16px;" onclick="sendSMS('C')">
+                    <span class="material-symbols-outlined">refresh</span> Опрос
+                </button>
+            </div>
+        </div>
+
+        <!-- Основные кнопки -->
+        <div class="card">
+            <div class="card-title">
+                <span class="material-symbols-outlined">power_settings_new</span> Управление запуском
+            </div>
+            <div class="btn-grid">
+                <button class="btn-start" onclick="sendSMS('K')">
+                    <span class="material-symbols-outlined">play_arrow</span> ЗАПУСК
+                </button>
+                <button class="btn-stop" onclick="sendSMS('G')">
+                    <span class="material-symbols-outlined">stop</span> СТОП
+                </button>
+            </div>
+        </div>
+
+        <!-- Время работы -->
+        <div class="card">
+            <div class="card-title">
+                <span class="material-symbols-outlined">schedule</span> Время работы
+            </div>
+            <div class="input-group">
+                <label for="workTime">Время работы (минуты): команда K*XXX</label>
+                <div style="display: flex; gap: 8px;">
+                    <input type="number" id="workTime" value="40" style="flex: 1;" min="10" max="120">
+                    <button class="btn-action" onclick="setTime()">Задать</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Температура нагрева -->
+        <div class="card">
+            <div class="card-title">
+                <span class="material-symbols-outlined">thermostat</span> Температура нагрева
+            </div>
+            <div class="input-group">
+                <div class="slider-header">
+                    <span>Целевая температура (CGPZ)</span>
+                    <span class="slider-value" id="tempVal">65 °C</span>
+                </div>
+                <input type="range" id="tempSlider" min="30" max="90" value="65" oninput="updateTempLabel(this.value)">
+                <button class="btn-action" onclick="sendTempSMS()">Отправить температуру</button>
+            </div>
+        </div>
+
+        <!-- Режим догрева (XHPZ) -->
+        <div class="card">
+            <div class="card-title">
+                <span class="material-symbols-outlined">local_fire_department</span> Режим догрева (XHPZ)
+            </div>
+            
+            <div class="input-group">
+                <div class="slider-header">
+                    <span>Верхняя температура</span>
+                    <span class="slider-value" id="upperVal">80 °C</span>
+                </div>
+                <input type="range" id="upperSlider" min="40" max="90" value="80" oninput="updateDogrevLabels()">
+            </div>
+
+            <div class="input-group">
+                <div class="slider-header">
+                    <span>Нижняя температура</span>
+                    <span class="slider-value" id="lowerVal">60 °C</span>
+                </div>
+                <input type="range" id="lowerSlider" min="30" max="80" value="60" oninput="updateDogrevLabels()">
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+                <button class="btn-action" style="flex: 1;" onclick="sendDogrevSMS()">Включить (XHPZ)</button>
+                <button class="btn-action" style="flex: 1; border-color: var(--stop-gradient); color: #ff8a65;" onclick="sendSMS('XHPZ OFF')">Выключить (OFF)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКА 2: ЛОГ SMS -->
+    <div id="tab-log" class="tab-content">
+        <div class="card">
+            <div class="card-title" style="justify-content: space-between;">
+                <span><span class="material-symbols-outlined" style="vertical-align: middle;">history</span> История команд</span>
+                <button class="btn-action" style="padding: 6px 12px; font-size: 12px;" onclick="clearLog()">Очистить</button>
+            </div>
+            <div id="logContainer" style="display: flex; flex-direction: column; gap: 8px;">
+                <span style="color: var(--text-secondary); font-size: 14px; text-align: center; padding: 20px;">Нет отправленных команд</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКА 3: ОШИБКИ -->
+    <div id="tab-errors" class="tab-content">
+        <div class="card">
+            <div class="card-title">
+                <span class="material-symbols-outlined">report</span> Коды неисправностей (Инструкция)
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div class="error-item">
+                    <span class="error-code">E-01: Ненормальное напряжение</span>
+                    <span class="error-desc">Проверить напряжение аккумулятора.</span>
+                    <span class="error-rec">Рекомендация: Проверьте повреждения, обрывы, жгуты.</span>
+                </div>
+                <div class="error-item">
+                    <span class="error-code">E-02: Неисправность нагнетателя</span>
+                    <span class="error-desc">Проверка на загрязнение, свободный ход вентилятора.</span>
+                    <span class="error-rec">Рекомендация: Очистите или замените нагнетатель.</span>
+                </div>
+                <div class="error-item">
+                    <span class="error-code">E-03: Неисправность топливного насоса</span>
+                    <span class="error-desc">Проверка проводки и топливного насоса.</span>
+                    <span class="error-rec">Рекомендация: При необходимости замените насос.</span>
+                </div>
+                <div class="error-item">
+                    <span class="error-code">E-04: Неисправность жидкостного насоса</span>
+                    <span class="error-desc">Почистить насосную часть помпы.</span>
+                    <span class="error-rec">Рекомендация: Проверьте электрические жгуты и помпу.</span>
+                </div>
+                <div class="error-item">
+                    <span class="error-code">E-05: Срыв пламени</span>
+                    <span class="error-desc">Забор воздуха, магистраль отвода газов, топливная система.</span>
+                    <span class="error-rec">Рекомендация: Проверьте насос-дозатор и штифт накала.</span>
+                </div>
+                <div class="error-item">
+                    <span class="error-code">E-06: Неисправность датчика пламени</span>
+                    <span class="error-desc">Повреждения электропроводки датчика пламени.</span>
+                    <span class="error-rec">Рекомендация: Проверьте сопротивление датчика.</span>
+                </div>
+                <div class="error-item">
+                    <span class="error-code">E-07: Неисправность штифта накала</span>
+                    <span class="error-desc">Обрывы, короткие замыкания в цепи штифта.</span>
+                    <span class="error-rec">Рекомендация: Функциональная проверка, замена.</span>
+                </div>
+                <div class="error-item">
+                    <span class="error-code">E-08: Сбой вторичного запуска</span>
+                    <span class="error-desc">Частый срыв пламени или забор воздуха.</span>
+                    <span class="error-rec">Рекомендация: Проверьте магистрали и насос-дозатор.</span>
+                </div>
+                <div class="error-item">
+                    <span class="error-code">E-09: Неисправность датчика температуры ОЖ</span>
+                    <span class="error-desc">Повреждения электропроводки датчика.</span>
+                    <span class="error-rec">Рекомендация: Проверьте сопротивление датчика.</span>
+                </div>
+                <div class="error-item">
+                    <span class="error-code">E-10: Перегрев корпуса подогревателя</span>
+                    <span class="error-desc">Аномальный нагрев корпуса подогревателя.</span>
+                    <span class="error-rec">Рекомендация: Проверьте датчик пламени и циркуляцию.</span>
+                </div>
+                <div class="error-item">
+                    <span class="error-code">E-11: Перегрев охлаждающей жидкости</span>
+                    <span class="error-desc">Воздух в контуре или плохая циркуляция.</span>
+                    <span class="error-rec">Рекомендация: Удалите воздух, проверьте помпу и качество антифриза.</span>
+                </div>
+                <div class="error-item">
+                    <span class="error-code">E-12: Обрыв связи пульта с салоном</span>
+                    <span class="error-desc">Проблема беспроводной связи дистанционного пульта.</span>
+                    <span class="error-rec">Рекомендация: Убедитесь, что антенна прикручена и расстояние не более 100м.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКА 4: ДОНАТ -->
+    <div id="tab-donate" class="tab-content">
+        <div class="card donate-box">
+            <div class="card-title" style="align-self: flex-start;">
+                <span class="material-symbols-outlined">favorite</span> Поддержать проект
+            </div>
+            <p style="color: var(--text-secondary); font-size: 14px; text-align: left;">
+                Если приложение оказалось полезным и вы хотите поддержать его дальнейшее развитие, вы можете отправить донат по номеру телефона:
+            </p>
+            <div class="phone-display" id="phoneNumber">89132814135</div>
+            <button class="btn-start" onclick="copyPhone()" style="width: 100%; grid-column: auto;">
+                <span class="material-symbols-outlined">content_copy</span> Скопировать номер
+            </button>
+            <span id="copyStatus" style="font-size: 13px; color: #4caf50; display: none;">Номер успешно скопирован!</span>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabId, btnElement) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            btnElement.classList.add('active');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            let savedCarName = localStorage.getItem('carModel');
+            let savedPhoto = localStorage.getItem('carPhoto');
+
+            if (savedCarName) {
+                document.getElementById('carModelInput').value = savedCarName;
+                document.getElementById('displayCarName').innerText = savedCarName;
+            }
+
+            if (savedPhoto) {
+                let img = document.getElementById('carImagePreview');
+                img.src = savedPhoto;
+                img.style.display = 'block';
+                document.getElementById('carPlaceholder').style.display = 'none';
+            }
+        });
+
+        function saveCarConfig() {
+            let modelName = document.getElementById('carModelInput').value.trim();
+            document.getElementById('displayCarName').innerText = modelName ? modelName : "Мой автомобиль";
+            localStorage.setItem('carModel', modelName);
+        }
+
+        function loadCarPhoto(event) {
+            let file = event.target.files[0];
+            if (file) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    let base64Image = e.target.result;
+                    let img = document.getElementById('carImagePreview');
+                    img.src = base64Image;
+                    img.style.display = 'block';
+                    document.getElementById('carPlaceholder').style.display = 'none';
+                    localStorage.setItem('carPhoto', base64Image);
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        let smsLogs = [];
+
+        function addLog(command) {
+            let now = new Date().toLocaleTimeString();
+            smsLogs.unshift({ command: command, time: now });
+            renderLogs();
+        }
+
+        function renderLogs() {
+            let container = document.getElementById('logContainer');
+            if (smsLogs.length === 0) {
+                container.innerHTML = `<span style="color: var(--text-secondary); font-size: 14px; text-align: center; padding: 20px;">Нет отправленных команд</span>`;
+                return;
+            }
+            let html = '';
+            smsLogs.forEach(item => {
+                html += `
+                    <div class="log-item">
+                        <div style="display: flex; justify-content: space-between;">
+                            <strong>Команда: ${item.command}</strong>
+                            <span class="log-time">${item.time}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function clearLog() {
+            smsLogs = [];
+            renderLogs();
+        }
+
+        function sendSMS(command) {
+            let phone = document.getElementById('heaterPhone').value.trim();
+            addLog(command);
+
+            if (window.Android && typeof window.Android.sendSMS === 'function') {
+                if (typeof window.Android.sendSMSWithPhone === 'function' && phone) {
+                    window.Android.sendSMSWithPhone(phone, command);
+                } else {
+                    window.Android.sendSMS(command);
+                }
+            } else {
+                let targetInfo = phone ? ` на номер ${phone}` : '';
+                alert(`Отправка SMS${targetInfo}: ${command}`);
+            }
+        }
+
+        function setTime() {
+            let val = document.getElementById('workTime').value;
+            let formattedVal = String(val).padStart(3, '0');
+            sendSMS('K*' + formattedVal);
+        }
+
+        function updateTempLabel(val) {
+            document.getElementById('tempVal').innerText = val + ' °C';
+        }
+
+        function sendTempSMS() {
+            let val = document.getElementById('tempSlider').value;
+            sendSMS('CGPZ*' + val);
+        }
+
+        function updateDogrevLabels() {
+            let upper = document.getElementById('upperSlider').value;
+            let lower = document.getElementById('lowerSlider').value;
+            
+            document.getElementById('upperVal').innerText = upper + ' °C';
+            document.getElementById('lowerVal').innerText = lower + ' °C';
+        }
+
+        function sendDogrevSMS() {
+            let upper = document.getElementById('upperSlider').value;
+            let lower = document.getElementById('lowerSlider').value;
+            sendSMS('XHPZ*' + upper + '*' + lower);
+        }
+
+        function copyPhone() {
+            let phoneText = "89132814135";
+            navigator.clipboard.writeText(phoneText).then(() => {
+                let status = document.getElementById('copyStatus');
+                status.style.display = 'block';
+                setTimeout(() => { status.style.display = 'none'; }, 3000);
+            });
+        }
+    </script>
+</body>
+</html>
